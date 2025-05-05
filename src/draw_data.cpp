@@ -17,8 +17,12 @@ void DrawData::set_point_size(std::uint32_t size) {
     m_point_size = size;
 }
 
-void DrawData::add_point(Offset offset) {
-    m_points.push_back(offset);
+void DrawData::set_format(Format format) {
+    m_format = format;
+}
+
+void DrawData::add_vertex(Offset offset) {
+    m_vertices.push_back(offset);
 }
 
 Color DrawData::get_color() const {
@@ -29,6 +33,10 @@ std::uint32_t DrawData::get_point_size() const {
     return m_point_size;
 }
 
-std::vector<Offset> DrawData::get_points() const {
-    return m_points;
+DrawData::Format DrawData::get_format() const {
+    return m_format;
+}
+
+std::vector<Offset> DrawData::get_vertices() const {
+    return m_vertices;
 }

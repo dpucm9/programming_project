@@ -1,27 +1,28 @@
 #pragma once
 
+#include <bobcat_ui/canvas.h>
 #include <functional>
 
 #include <bobcat_ui/image.h>
 #include "draw_data.hpp"
 #include <bobcat_ui/button.h>
 
-class Canvas {
+class Canvas : public bobcat::Canvas_ {
 public:
-    bobcat::Button* a;
     Canvas(std::int32_t x, std::int32_t y, std::uint32_t w, std::uint32_t h);
     ~Canvas();
 
-    std::function<void(bobcat::Widget*, int, int)> onMouseDownCb;
-    std::function<void(bobcat::Widget*, int, int)> onMouseUpCb;
-    std::function<void(bobcat::Widget*, int, int)> onDragCb;
-    void onMouseDown(std::function<void(bobcat::Widget*, int, int)> cb);
-    void onMouseUp(std::function<void(bobcat::Widget*, int, int)> cb);
-    void onDrag(std::function<void(bobcat::Widget *, int, int)> cb);
-    
-    void add_draw_data(DrawData data);
+    void set_color(Color color);
+    void set_point_size(std::size_t size);
+
+    void prepare_next_draw_data(DrawData::Format format);
+    void next_draw_data_add_vertex(Offset offset);
+    void push_draw_data(DrawData data);
     void clear_draw_data();
+    
+    void render();
 private:
-    bobcat::Image* m_image = nullptr;
+    Color m_color;
+    std::size_t m_point_size;
     std::vector<DrawData> m_draw_data;
 };

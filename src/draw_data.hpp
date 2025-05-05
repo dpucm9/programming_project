@@ -4,8 +4,8 @@
 #include <vector>
 
 struct Offset {
-    std::int32_t x;
-    std::int32_t y;
+    float x;
+    float y;
 };
 
 struct Color {
@@ -16,16 +16,25 @@ struct Color {
 
 class DrawData {
 public:
+    enum Format {
+        Points,
+        Triangle,
+        Rectangle,
+        Polygon
+    };
     DrawData();
     void set_color(Color color);
     void set_point_size(std::uint32_t size);
-    void add_point(Offset offset);
+    void set_format(Format format);
+    void add_vertex(Offset offset);
 
     Color get_color() const;
     std::uint32_t get_point_size() const;
-    std::vector<Offset> get_points() const;
+    Format get_format() const;
+    std::vector<Offset> get_vertices() const;
 private:
+    Format m_format;
     Color m_color;
     std::uint32_t m_point_size;
-    std::vector<Offset> m_points;
+    std::vector<Offset> m_vertices;
 };
