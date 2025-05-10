@@ -136,40 +136,44 @@ void Application::cb_tool_selector(bobcat::Widget* sender) {
 }
 
 void Application::cb_size_input(bobcat::Widget* sender) {
-    if (!m_paint_brush_size_input->empty()) {
-        m_point_size = static_cast<std::size_t>(m_paint_brush_size_input->value());
-        m_canvas->set_point_size(m_point_size);
+    if (m_paint_brush_size_input->empty()) {
+        m_paint_brush_size_input->value(1);
     }
+    m_point_size = static_cast<std::size_t>(m_paint_brush_size_input->value());
+    m_canvas->set_point_size(m_point_size);
 }
 
 void Application::cb_red_input(bobcat::Widget* sender) {
-    if (!m_color_picker_red_input->empty()) {
-        m_color.r = static_cast<float>(m_color_picker_red_input->value() / 255.0f);
-        m_canvas->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
-
-        m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
-        m_color_picker_preview->redraw();
+    if (m_color_picker_red_input->empty()) {
+        m_color_picker_red_input->value(0);
     }
+    m_color.r = static_cast<float>(m_color_picker_red_input->value() / 255.0f);
+    m_canvas->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
+
+    m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
+    m_color_picker_preview->redraw();
 }
 
 void Application::cb_green_input(bobcat::Widget* sender) {
-    if (!m_color_picker_green_input->empty()) {
-        m_color.g = static_cast<float>(m_color_picker_green_input->value());
-        m_canvas->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
-
-        m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
-        m_color_picker_preview->redraw();
+    if (m_color_picker_green_input->empty()) {
+        m_color_picker_green_input->value(0);
     }
+    m_color.g = static_cast<float>(m_color_picker_green_input->value());
+    m_canvas->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
+
+    m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
+    m_color_picker_preview->redraw();
 }
 
 void Application::cb_blue_input(bobcat::Widget* sender) {
-    if (!m_color_picker_blue_input->empty()) {
-        m_color.b = static_cast<float>(m_color_picker_blue_input->value());
-        m_canvas->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
-
-        m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
-        m_color_picker_preview->redraw();
+    if (m_color_picker_blue_input->empty()) {
+        m_color_picker_blue_input->value(0);
     }
+    m_color.b = static_cast<float>(m_color_picker_blue_input->value());
+    m_canvas->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
+
+    m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
+    m_color_picker_preview->redraw();
 }
 
 void Application::interaction_handler_paint(InputEvent input_event, float mouse_x, float mouse_y) {
