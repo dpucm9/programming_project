@@ -194,7 +194,7 @@ void Application::interaction_handler_erase(InputEvent input_event, float mouse_
             case InputEvent::MouseDown:
                 m_canvas->set_point_size(m_point_size);
                 m_canvas->set_color(Color { .r = 255, .g = 255, .b = 255 });
-                m_canvas->prepare_next_draw_data(DrawData::Format::Triangle);
+                m_canvas->prepare_next_draw_data(DrawData::Format::Points);
                 break;
             case InputEvent::MouseUp:
                 break;
