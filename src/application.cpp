@@ -131,10 +131,6 @@ void Application::cb_tool_shape_circle(bobcat::Widget* sender) {
     m_application_mode = ShapeCircle;
 }
 
-void Application::cb_tool_selector(bobcat::Widget* sender) {
-
-}
-
 void Application::cb_size_input(bobcat::Widget* sender) {
     if (!m_paint_brush_size_input->empty()) {
         m_point_size = static_cast<std::size_t>(m_paint_brush_size_input->value());
@@ -144,7 +140,7 @@ void Application::cb_size_input(bobcat::Widget* sender) {
 
 void Application::cb_red_input(bobcat::Widget* sender) {
     if (!m_color_picker_red_input->empty()) {
-        m_color.r = static_cast<float>(m_color_picker_red_input->value() / 255.0f);
+        m_color.r = static_cast<float>(m_color_picker_red_input->value());
         m_canvas->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
 
         m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));

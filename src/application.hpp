@@ -61,7 +61,6 @@ private:
     void cb_tool_shape_rectangle(bobcat::Widget* sender);
     void cb_tool_shape_polygon(bobcat::Widget* sender);
     void cb_tool_shape_circle(bobcat::Widget* sender);
-    void cb_tool_selector(bobcat::Widget* sender);
 
     void cb_size_input(bobcat::Widget* sender);
     void cb_red_input(bobcat::Widget* sender);
