@@ -18,7 +18,7 @@ public:
     void push_draw_data(DrawData data);
     void clear_draw_data();
 
-    void convert_pixel_coordinates(std::int32_t* x0, std::int32_t* y0, std::int32_t* x1, std::int32_t* y1);
+    void convert_pixel_coordinates(float mouse_x, float mouse_y, std::int32_t* x1, std::int32_t* y1);
     DrawData* point_selection(float mouse_x, float mouse_y);
     
     void render();

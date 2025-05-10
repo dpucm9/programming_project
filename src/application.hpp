@@ -77,7 +77,7 @@ private:
     void interaction_handler_shape_triangle(InputEvent input_event, float mouse_x, float mouse_y);
     void interaction_handler_shape_rectangle(InputEvent input_event, float mouse_x, float mouse_y);
     void interaction_handler_shape_polygon(InputEvent input_event, float mouse_x, float mouse_y);
-    void interaction_handler_shape_cirlce(InputEvent input_event, float mouse_x, float mouse_y);
+    void interaction_handler_shape_circle(InputEvent input_event, float mouse_x, float mouse_y);
 
     // ensures offsets always follow a top left to bottom right pattern.
     void validate_shape_offsets();

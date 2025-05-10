@@ -210,14 +210,14 @@ void Application::interaction_handler_select(InputEvent input_event, float mouse
     switch (input_event) {
         case InputEvent::MouseDown:
             m_selected_data = m_canvas->point_selection(mouse_x, mouse_y);
-            m_selected_data.set_color(Color { 0.0f, 1.0f, 0.0f });
+            m_selected_data->set_color(Color { 0.0f, 1.0f, 0.0f });
             break;
         case InputEvent::MouseUp:
             break;
         case InputEvent::MouseDrag:
             if (m_selected_data != nullptr) {
                 std::int32_t x0, y0;
-                canvas->convert_pixel_coordinates(mouse_x, mouse_y, &x0, &y0);
+                m_canvas->convert_pixel_coordinates(mouse_x, mouse_y, &x0, &y0);
                 // TODO TODO TODO
             }
             break;
@@ -295,7 +295,7 @@ void Application::interaction_handler_shape_polygon(InputEvent input_event, floa
     }
 }
 
-void Application::interaction_handler_shape_cirlce(InputEvent input_event, float mouse_x, float mouse_y) {
+void Application::interaction_handler_shape_circle(InputEvent input_event, float mouse_x, float mouse_y) {
     switch (input_event) {
         case InputEvent::MouseDown:
             m_canvas->set_point_size(m_point_size);
@@ -320,8 +320,8 @@ void Application::interaction_handler_shape_cirlce(InputEvent input_event, float
 void Application::validate_shape_offsets() {
     // convert screen coordinates to pixel coordinates
     std::int32_t x0, y0, x1, y1;
-    canvas->convert_pixel_coordinates(m_shape_start.x, m_shape_start.y, &x0, &y0);
-    canvas->convert_pixel_coordinates(m_shape_end.x, m_shape_end.y, &x1, &y1);
+    m_canvas->convert_pixel_coordinates(m_shape_start.x, m_shape_start.y, &x0, &y0);
+    m_canvas->convert_pixel_coordinates(m_shape_end.x, m_shape_end.y, &x1, &y1);
     // adjust coordinates
     if (x1 < x0) {
         float old_x0 = x0;

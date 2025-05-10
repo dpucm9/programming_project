@@ -23,13 +23,10 @@ void Canvas::set_point_size(std::size_t size) {
 }
 
 void Canvas::prepare_next_draw_data(DrawData::Format format) {
-    m_draw_data.push_back(DrawDataInfo info = {
-        .offset = { 0.0f, 0.0f },
-        .extent = { 0.0f, 0.0f },
-        .color = m_color,
-        .size = m_point_size,
-        .format = format
-    });
+    m_draw_data.resize(m_draw_data.size() + 1);
+    m_draw_data.back().set_color(m_color);
+    m_draw_data.back().set_point_size(m_point_size);
+    m_draw_data.back().set_format(format);
 }
 
 void Canvas::next_draw_data_add_vertex(Offset offset) {
@@ -50,10 +47,10 @@ void Canvas::clear_draw_data() {
 void Canvas::convert_pixel_coordinates(float screen_x, float screen_y, std::int32_t* pixel_x, std::int32_t* pixel_y) {
     int canvas_width, canvas_height;
     get_size(&canvas_width, &canvas_height);
-    if (x0 != nullptr) {
+    if (pixel_x != nullptr) {
         *pixel_x = (screen_x + 1) * canvas_width / 2;
     }
-    if (y0 != nullptr) {
+    if (pixel_y != nullptr) {
         *pixel_y = (screen_y + 1) * canvas_height / 2;
     }
 }
@@ -64,8 +61,8 @@ DrawData* Canvas::point_selection(float mouse_x, float mouse_y) {
         const Offset start = m_draw_data[i].get_offset_start();
         const Offset end = m_draw_data[i].get_offset_end();
         std::int32_t x0, y0, x1, y1;
-        screen_to_pixel_coordinates(start.x, start.y, &x0, &y0);
-        screen_to_pixel_coordinates(end.x, end.y, &x1, &y1);
+        convert_pixel_coordinates(start.x, start.y, &x0, &y0);
+        convert_pixel_coordinates(end.x, end.y, &x1, &y1);
         if (mouse_x >= x0 && mouse_x <= x1) {
             if (mouse_y >= y0 && mouse_y <= y1) {
                 hit_indices.push_back(i);
@@ -79,7 +76,7 @@ DrawData* Canvas::point_selection(float mouse_x, float mouse_y) {
     std::size_t topmost_layer = 0;
     std::size_t topmost_hit_index = 0;
     for (std::size_t i = 0; i < hit_indices.size(); ++i) {
-        const std::size_t layer = m_draw_data[hit_indicies[i]].get_layer();
+        const std::size_t layer = m_draw_data[hit_indices[i]].get_layer();
         if (layer > topmost_layer) {
             topmost_layer = layer;
             topmost_hit_index = i;
@@ -96,6 +93,8 @@ void Canvas::render() {
 
         const std::vector<Offset> vertices = data.get_vertices();
         switch (data.get_format()) {
+            case DrawData::Format::Unknown:
+                throw "DrawData, .format was DrawData::Unknown.";
             case DrawData::Format::Points: {
                 glBegin(GL_POINTS); // switch modes per type
                 for (std::size_t j = 0; j < vertices.size(); ++j) {

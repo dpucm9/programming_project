@@ -39,7 +39,7 @@ public:
     DrawData();
     void set_color(Color color);
     void set_point_size(std::uint32_t size);
-    //void set_format(Format format);
+    void set_format(Format format);
     void add_vertex(Offset offset);
 
     Offset get_offset_start() const;

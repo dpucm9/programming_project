@@ -17,9 +17,9 @@ void DrawData::set_point_size(std::uint32_t size) {
     m_point_size = size;
 }
 
-//void DrawData::set_format(Format format) {
-//    m_format = format;
-//}
+void DrawData::set_format(Format format) {
+    m_format = format;
+}
 
 void DrawData::add_vertex(Offset offset) {
     m_vertices.push_back(offset);
