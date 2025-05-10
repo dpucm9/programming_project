@@ -8,6 +8,8 @@ public:
     Canvas(std::int32_t x, std::int32_t y, std::uint32_t w, std::uint32_t h);
     ~Canvas();
 
+    void get_size(int* width, int* height);
+
     void set_color(Color color);
     void set_point_size(std::size_t size);
 
@@ -15,6 +17,9 @@ public:
     void next_draw_data_add_vertex(Offset offset);
     void push_draw_data(DrawData data);
     void clear_draw_data();
+
+    void convert_pixel_coordinates(std::int32_t* x0, std::int32_t* y0, std::int32_t* x1, std::int32_t* y1);
+    DrawData* point_selection(float mouse_x, float mouse_y);
     
     void render();
 private:

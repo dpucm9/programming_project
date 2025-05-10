@@ -32,11 +32,11 @@ private:
     bobcat::Image* m_tool_paint_brush = nullptr;
     bobcat::Image* m_tool_eraser = nullptr;
     bobcat::Image* m_tool_clear_screen = nullptr;
+    bobcat::Image* m_tool_select = nullptr;
     bobcat::Image* m_tool_shape_triangle = nullptr;
     bobcat::Image* m_tool_shape_rectangle = nullptr;
     bobcat::Image* m_tool_shape_polygon = nullptr;
     bobcat::Image* m_tool_shape_circle = nullptr;
-    bobcat::Image* m_tool_selector = nullptr;
 
     bobcat::IntInput* m_paint_brush_size_input = nullptr;
     bobcat::Button* m_color_picker_preview = nullptr;
@@ -55,6 +55,7 @@ private:
 
     void cb_tool_paint_brush(bobcat::Widget* sender);
     void cb_tool_eraser(bobcat::Widget* sender);
+    void cb_tool_select(bobcat::Widget* sender);
     void cb_tool_clear_screen(bobcat::Widget* sender);
     void cb_tool_shape_triangle(bobcat::Widget* sender);
     void cb_tool_shape_rectangle(bobcat::Widget* sender);
@@ -69,4 +70,15 @@ private:
 
     Offset m_shape_start;
     Offset m_shape_end;
+    DrawData* m_selected_data;
+    void interaction_handler_paint(InputEvent input_event, float mouse_x, float mouse_y);
+    void interaction_handler_erase(InputEvent input_event, float mouse_x, float mouse_y);
+    void interaction_handler_select(InputEvent input_event, float mouse_x, float mouse_y);
+    void interaction_handler_shape_triangle(InputEvent input_event, float mouse_x, float mouse_y);
+    void interaction_handler_shape_rectangle(InputEvent input_event, float mouse_x, float mouse_y);
+    void interaction_handler_shape_polygon(InputEvent input_event, float mouse_x, float mouse_y);
+    void interaction_handler_shape_cirlce(InputEvent input_event, float mouse_x, float mouse_y);
+
+    // ensures offsets always follow a top left to bottom right pattern.
+    void validate_shape_offsets();
 };
