@@ -14,6 +14,7 @@ public:
     void set_point_size(std::size_t size);
 
     void prepare_next_draw_data(DrawData::Format format);
+    void next_draw_data_set_offset_bounds(Offset start, Offset end);
     void next_draw_data_add_vertex(Offset offset);
     void push_draw_data(DrawData data);
     void clear_draw_data();

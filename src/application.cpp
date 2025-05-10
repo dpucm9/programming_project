@@ -206,7 +206,10 @@ void Application::interaction_handler_select(InputEvent input_event, float mouse
     switch (input_event) {
         case InputEvent::MouseDown:
             m_selected_data = m_canvas->point_selection(mouse_x, mouse_y);
-            m_selected_data->set_color(Color { 0.0f, 1.0f, 0.0f });
+            if (m_selected_data != nullptr) {
+                m_selected_data->set_color(Color { 0.0f, 1.0f, 0.0f });
+                m_canvas->redraw();
+            }
             break;
         case InputEvent::MouseUp:
             break;
@@ -231,6 +234,7 @@ void Application::interaction_handler_shape_triangle(InputEvent input_event, flo
         case InputEvent::MouseUp:
             m_shape_end = Offset { .x = mouse_x, .y = mouse_y };
             validate_shape_offsets();
+            m_canvas->next_draw_data_set_offset_bounds(m_shape_start, m_shape_end);
             m_canvas->next_draw_data_add_vertex(Offset{ .x = m_shape_start.x + ((m_shape_end.x - m_shape_start.x) / 2.0f), .y = m_shape_start.y });
             m_canvas->next_draw_data_add_vertex(Offset{ .x = m_shape_start.x, .y = m_shape_end.y });
             m_canvas->next_draw_data_add_vertex(Offset{ .x = m_shape_end.x, .y = m_shape_end.y });
@@ -252,6 +256,7 @@ void Application::interaction_handler_shape_rectangle(InputEvent input_event, fl
         case InputEvent::MouseUp:
             m_shape_end = Offset { .x = mouse_x, .y = mouse_y };
             validate_shape_offsets();
+            m_canvas->next_draw_data_set_offset_bounds(m_shape_start, m_shape_end);
             m_canvas->next_draw_data_add_vertex(Offset{ .x = m_shape_start.x, .y = m_shape_start.y });
             m_canvas->next_draw_data_add_vertex(Offset{ .x = m_shape_start.x + (m_shape_end.x - m_shape_start.x), .y = m_shape_start.y });
             m_canvas->next_draw_data_add_vertex(Offset{ .x = m_shape_start.x, .y = m_shape_start.y + (m_shape_end.y - m_shape_start.y) });
@@ -276,6 +281,7 @@ void Application::interaction_handler_shape_polygon(InputEvent input_event, floa
         case InputEvent::MouseUp: {
             m_shape_end = Offset { .x = mouse_x, .y = mouse_y };
             validate_shape_offsets();
+            m_canvas->next_draw_data_set_offset_bounds(m_shape_start, m_shape_end);
             m_canvas->next_draw_data_add_vertex(Offset{ .x = m_shape_start.x + ((m_shape_end.x - m_shape_start.x) / 2.0f), .y = m_shape_start.y }); // tm
             m_canvas->next_draw_data_add_vertex(Offset { .x = m_shape_start.x, .y = m_shape_start.y + (m_shape_end.y - m_shape_start.y) / 2 }); // tl
             m_canvas->next_draw_data_add_vertex(Offset { .x = m_shape_start.x + (m_shape_end.x - m_shape_start.x), .y = m_shape_start.y + (m_shape_end.y - m_shape_start.y) / 2 }); // tr
@@ -300,6 +306,7 @@ void Application::interaction_handler_shape_circle(InputEvent input_event, float
             break;
         case InputEvent::MouseUp: {
             validate_shape_offsets(); // remember !!
+            m_canvas->next_draw_data_set_offset_bounds(m_shape_start, m_shape_end);
             float inc = 2 * M_PI / 60;
             float radius = m_point_size / 100.0f;
             for (float theta = 0; theta <= 2 * M_PI; theta += inc) {

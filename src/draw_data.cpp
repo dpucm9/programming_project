@@ -9,6 +9,11 @@ DrawData::DrawData() {
     m_point_size = get_default_point_size();
 }
 
+void DrawData::set_bounds(Offset start, Offset end) {
+    m_offset_start = start;
+    m_offset_end = end;
+}
+
 void DrawData::set_color(Color color) {
     m_color = color;
 }

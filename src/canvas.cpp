@@ -29,6 +29,10 @@ void Canvas::prepare_next_draw_data(DrawData::Format format) {
     m_draw_data.back().set_format(format);
 }
 
+void Canvas::next_draw_data_set_offset_bounds(Offset start, Offset end) {
+    m_draw_data.back().set_bounds(start, end);
+}
+
 void Canvas::next_draw_data_add_vertex(Offset offset) {
     if (m_draw_data.empty()) {
         throw "unreachable";
@@ -60,11 +64,16 @@ DrawData* Canvas::point_selection(float mouse_x, float mouse_y) {
     for (std::size_t i = 0; i < m_draw_data.size(); ++i) {
         const Offset start = m_draw_data[i].get_offset_start();
         const Offset end = m_draw_data[i].get_offset_end();
-        std::int32_t x0, y0, x1, y1;
+        std::int32_t mx, my, x0, y0, x1, y1;
+        convert_pixel_coordinates(mouse_x, mouse_y, &mx, &my);
         convert_pixel_coordinates(start.x, start.y, &x0, &y0);
         convert_pixel_coordinates(end.x, end.y, &x1, &y1);
-        if (mouse_x >= x0 && mouse_x <= x1) {
-            if (mouse_y >= y0 && mouse_y <= y1) {
+        //std::cout << "m: (" << mx << ", " << my << std::endl;
+        //std::cout << "b0: (" << x0 << ", " << y0 << std::endl;
+        //std::cout << "b1: (" << x1 << ", " << y1 << std::endl;
+        if (mx >= x0 && mx <= x1) {
+            if (my <= y0 && my >= y1) { // inverted comparisons due to canvas bottom being y=0
+                std::cout << "hit: " << i << std::endl;
                 hit_indices.push_back(i);
             }
         }
@@ -73,13 +82,16 @@ DrawData* Canvas::point_selection(float mouse_x, float mouse_y) {
         return nullptr;
     }
 
-    std::size_t topmost_layer = 0;
-    std::size_t topmost_hit_index = 0;
-    for (std::size_t i = 0; i < hit_indices.size(); ++i) {
-        const std::size_t layer = m_draw_data[hit_indices[i]].get_layer();
-        if (layer > topmost_layer) {
-            topmost_layer = layer;
-            topmost_hit_index = i;
+    // FIX LAYERING WHEN 3 OVERLAP
+    std::size_t topmost_hit_index = hit_indices[0];
+    if (hit_indices.size() > 1) {
+        std::size_t topmost_layer = 0;
+        for (std::size_t i = 0; i < hit_indices.size(); ++i) {
+            const std::size_t layer = m_draw_data[hit_indices[i]].get_layer();
+            if (layer >= topmost_layer) {
+                topmost_layer = layer;
+                topmost_hit_index = i;
+            }
         }
     }
     return &m_draw_data[topmost_hit_index];

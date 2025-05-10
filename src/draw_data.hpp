@@ -37,6 +37,7 @@ public:
     }
 
     DrawData();
+    void set_bounds(Offset start, Offset end);
     void set_color(Color color);
     void set_point_size(std::uint32_t size);
     void set_format(Format format);
