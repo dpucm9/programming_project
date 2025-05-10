@@ -85,9 +85,10 @@ DrawData* Canvas::point_selection(float mouse_x, float mouse_y) {
     // FIX LAYERING WHEN 3 OVERLAP
     std::size_t topmost_hit_index = hit_indices[0];
     if (hit_indices.size() > 1) {
-        std::size_t topmost_layer = 0;
+        std::int32_t topmost_layer = hit_indices[0];
         for (std::size_t i = 0; i < hit_indices.size(); ++i) {
-            const std::size_t layer = m_draw_data[hit_indices[i]].get_layer();
+            const std::int32_t layer = m_draw_data[hit_indices[i]].get_layer();
+            std::cout << i << " -> layer: " << layer << std::endl;
             if (layer >= topmost_layer) {
                 topmost_layer = layer;
                 topmost_hit_index = i;

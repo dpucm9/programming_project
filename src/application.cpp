@@ -34,6 +34,8 @@ Application::Application() {
     m_color_picker_red_input = new IntInput(0, 250, 50, 50);
     m_color_picker_green_input = new IntInput(0, 300, 50, 50);
     m_color_picker_blue_input = new IntInput(0, 350, 50, 50);
+    m_front_button = new Image(0, 120, 50, 40, "assets/bring-to-front.png");
+    m_back_button = new Image(0, 160, 50, 40, "assets/send-to-back.png");
     m_point_size = 14;
     m_color = Color {
         .r = 255.0f,
@@ -50,6 +52,8 @@ Application::Application() {
     ON_CHANGE(m_color_picker_red_input, Application::cb_red_input);
     ON_CHANGE(m_color_picker_green_input, Application::cb_green_input);
     ON_CHANGE(m_color_picker_blue_input, Application::cb_blue_input);
+    ON_CLICK(m_front_button, Application::cb_front);
+    ON_CLICK(m_back_button, Application::cb_back);
 
     m_canvas = new Canvas(50, 50, width - 50, height - 50);
 
@@ -88,6 +92,8 @@ void Application::cb_interaction_handler(InputEvent input_event, float mouse_x, 
 
 void Application::cb_interaction_mouse_down(bobcat::Widget* sender, float mouse_x, float mouse_y) {
     cb_interaction_handler(InputEvent::MouseDown, mouse_x, mouse_y);
+    m_last_mouse_x = mouse_x;
+    m_last_mouse_y = mouse_y;
 }
 
 void Application::cb_interaction_mouse_up(bobcat::Widget* sender, float mouse_x, float mouse_y) {
@@ -135,6 +141,43 @@ void Application::cb_size_input(bobcat::Widget* sender) {
     if (!m_paint_brush_size_input->empty()) {
         m_point_size = static_cast<std::size_t>(m_paint_brush_size_input->value());
         m_canvas->set_point_size(m_point_size);
+
+        if (m_selected_data != nullptr) {
+            switch (m_selected_data->get_format()) {
+                case DrawData::Format::Unknown:
+                    throw "should be unreachable";
+                case DrawData::Format::Points:
+                    m_selected_data->set_point_size(m_point_size);
+                    break;
+                case DrawData::Format::Triangle:
+                case DrawData::Format::Rectangle:
+                case DrawData::Format::Polygon: {
+                    Offset end = m_selected_data->get_offset_end();
+                    Offset start = m_selected_data->get_offset_start();
+                    float vertices_middle_x = end.x - start.x;
+                    float vertices_middle_y = end.y - start.y;
+                    std::vector<Offset> temp = m_selected_vertices;
+                    std::vector<Offset>* vertices = m_selected_data->get_vertices_ptr();
+                    for (std::size_t i = 0; i < vertices->size(); ++i) {
+                        if (m_selected_vertices[i].x < vertices_middle_x) {
+                            temp[i].x -= static_cast<float>(m_point_size) / 100;
+                        } else {
+                            temp[i].x += static_cast<float>(m_point_size) / 100;
+                        }
+                        if (m_selected_vertices[i].y < vertices_middle_y) {
+                            temp[i].y -= static_cast<float>(m_point_size) / 100;
+                        } else {
+                            temp[i].y += static_cast<float>(m_point_size) / 100;
+                        }
+                        *m_selected_data->get_vertices_ptr() = temp;
+                        //(*vertices)[i].x *= static_cast<float>(m_point_size) / 10;
+                        //(*vertices)[i].y *= static_cast<float>(m_point_size) / 10;
+                    }
+                    break;
+                }
+            }
+        }
+        m_canvas->redraw();
     }
 }
 
@@ -145,6 +188,11 @@ void Application::cb_red_input(bobcat::Widget* sender) {
 
         m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
         m_color_picker_preview->redraw();
+
+        if (m_selected_data != nullptr) {
+            m_selected_data->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
+        }
+        m_canvas->redraw();
     }
 }
 
@@ -155,6 +203,11 @@ void Application::cb_green_input(bobcat::Widget* sender) {
 
         m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
         m_color_picker_preview->redraw();
+
+        if (m_selected_data != nullptr) {
+            m_selected_data->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
+        }
+        m_canvas->redraw();
     }
 }
 
@@ -165,7 +218,24 @@ void Application::cb_blue_input(bobcat::Widget* sender) {
 
         m_color_picker_preview->color(fl_rgb_color(m_color.r, m_color.g, m_color.b));
         m_color_picker_preview->redraw();
+
+        if (m_selected_data != nullptr) {
+            m_selected_data->set_color(Color { m_color.r / 255.0f, m_color.g / 255.0f, m_color.b / 255.0f});
+        }
+        m_canvas->redraw();
     }
+}
+
+void Application::cb_front(bobcat::Widget* sender) {
+    m_selected_data->increment_layer(1);
+    m_selected_data = m_canvas->point_selection(m_last_mouse_x, m_last_mouse_y);
+    m_canvas->redraw();
+}
+
+void Application::cb_back(bobcat::Widget* sender) {
+    m_selected_data->increment_layer(-1);
+    m_selected_data = m_canvas->point_selection(m_last_mouse_x, m_last_mouse_y);
+    m_canvas->redraw();
 }
 
 void Application::interaction_handler_paint(InputEvent input_event, float mouse_x, float mouse_y) {
@@ -174,10 +244,25 @@ void Application::interaction_handler_paint(InputEvent input_event, float mouse_
             m_canvas->set_point_size(m_point_size);
             m_canvas->set_color(m_color);
             m_canvas->prepare_next_draw_data(DrawData::Format::Points);
+            m_paint_start_bound = Offset { mouse_x, mouse_y };
+            m_paint_end_bound = Offset { mouse_x, mouse_y };
             break;
         case InputEvent::MouseUp:
             break;
         case InputEvent::MouseDrag: {
+            if (mouse_x < m_paint_start_bound.x) {
+                m_paint_start_bound.x = mouse_x;
+            }
+            if (mouse_x > m_paint_end_bound.x) {
+                m_paint_end_bound.x = mouse_x;
+            }
+            if (mouse_y < m_paint_end_bound.y) {
+                m_paint_end_bound.y = mouse_y;
+            }
+            if (mouse_y > m_paint_start_bound.y) {
+                m_paint_start_bound.y = mouse_y;
+            }
+            m_canvas->next_draw_data_set_offset_bounds(m_paint_start_bound, m_paint_end_bound);
             m_canvas->next_draw_data_add_vertex(Offset { .x = mouse_x, .y = mouse_y });
             m_canvas->redraw();
             break;
@@ -207,17 +292,34 @@ void Application::interaction_handler_select(InputEvent input_event, float mouse
         case InputEvent::MouseDown:
             m_selected_data = m_canvas->point_selection(mouse_x, mouse_y);
             if (m_selected_data != nullptr) {
-                m_selected_data->set_color(Color { 0.0f, 1.0f, 0.0f });
-                m_canvas->redraw();
+                //m_selected_data->set_color(Color { 0.0f, 1.0f, 0.0f });
+                //m_canvas->redraw();
+                m_selected_vertices = m_selected_data->get_vertices();
             }
             break;
         case InputEvent::MouseUp:
             break;
         case InputEvent::MouseDrag:
             if (m_selected_data != nullptr) {
-                std::int32_t x0, y0;
-                m_canvas->convert_pixel_coordinates(mouse_x, mouse_y, &x0, &y0);
+                /*
+                std::int32_t mx, my;
+                m_canvas->convert_pixel_coordinates(mouse_x, mouse_y, &mx, &my);
+                std::int32_t x0, y0, x1, y1;
+                Offset start = m_selected_data->get_offset_start();
+                Offset end = m_selected_data->get_offset_end();
+                m_canvas->convert_pixel_coordinates(start.x, start.y, &x0, &y0);
+                m_canvas->convert_pixel_coordinates(end.x, end.y, &x1, &y1);
                 // TODO TODO TODO
+                Offset difference {
+                    .x = mouse_x - m_select_point.x,
+                    .y = 0.0f
+                };
+                for (std::size_t i = 0; i < m_selected_vertices->size(); ++i) {
+                    (*m_selected_vertices)[i].x = 
+                }
+                std::cout << "diff: " << difference.x << " - pt: " << m_select_point.x << std::endl;
+                m_canvas->next_draw_data_set_offset_bounds(start, end)
+                */
             }
             break;
     }
@@ -310,7 +412,7 @@ void Application::interaction_handler_shape_circle(InputEvent input_event, float
             float inc = 2 * M_PI / 60;
             float radius = m_point_size / 100.0f;
             for (float theta = 0; theta <= 2 * M_PI; theta += inc) {
-                m_canvas->next_draw_data_add_vertex(Offset { .x = static_cast<float>(mouse_x + radius * cos(theta)), .y = static_cast<float>(mouse_y + radius * sin(theta)) });
+                m_canvas->next_draw_data_add_vertex(Offset { .x = static_cast<float>(m_last_mouse_x + radius * cos(theta)), .y = static_cast<float>(m_last_mouse_y + radius * sin(theta)) });
             }
             m_canvas->redraw();
             break;

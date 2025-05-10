@@ -38,6 +38,7 @@ public:
 
     DrawData();
     void set_bounds(Offset start, Offset end);
+    void increment_layer(std::int32_t offset);
     void set_color(Color color);
     void set_point_size(std::uint32_t size);
     void set_format(Format format);
@@ -50,10 +51,11 @@ public:
     Color get_color() const;
     std::uint32_t get_point_size() const;
     std::vector<Offset> get_vertices() const;
+    std::vector<Offset>* get_vertices_ptr();
 private:
     Offset m_offset_start;
     Offset m_offset_end;
-    std::size_t m_layer;
+    std::int32_t m_layer;
     Format m_format;
     Color m_color;
     std::uint32_t m_point_size;

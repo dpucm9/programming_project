@@ -43,6 +43,8 @@ private:
     bobcat::IntInput* m_color_picker_red_input = nullptr;
     bobcat::IntInput* m_color_picker_green_input = nullptr;
     bobcat::IntInput* m_color_picker_blue_input = nullptr;
+    bobcat::Image* m_front_button = nullptr;
+    bobcat::Image* m_back_button = nullptr;
     std::size_t m_point_size;
     Color m_color;
 
@@ -66,10 +68,19 @@ private:
     void cb_red_input(bobcat::Widget* sender);
     void cb_green_input(bobcat::Widget* sender);
     void cb_blue_input(bobcat::Widget* sender);
+    void cb_front(bobcat::Widget* sender);
+    void cb_back(bobcat::Widget* sender);
+
+    float m_last_mouse_x;
+    float m_last_mouse_y;
+
+    Offset m_paint_start_bound;
+    Offset m_paint_end_bound;
 
     Offset m_shape_start;
     Offset m_shape_end;
     DrawData* m_selected_data;
+    std::vector<Offset> m_selected_vertices;
     void interaction_handler_paint(InputEvent input_event, float mouse_x, float mouse_y);
     void interaction_handler_erase(InputEvent input_event, float mouse_x, float mouse_y);
     void interaction_handler_select(InputEvent input_event, float mouse_x, float mouse_y);

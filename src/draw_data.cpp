@@ -14,6 +14,10 @@ void DrawData::set_bounds(Offset start, Offset end) {
     m_offset_end = end;
 }
 
+void DrawData::increment_layer(std::int32_t offset) {
+    m_layer += offset;
+}
+
 void DrawData::set_color(Color color) {
     m_color = color;
 }
@@ -56,4 +60,8 @@ std::uint32_t DrawData::get_point_size() const {
 
 std::vector<Offset> DrawData::get_vertices() const {
     return m_vertices;
+}
+
+std::vector<Offset>* DrawData::get_vertices_ptr() {
+    return &m_vertices;
 }
