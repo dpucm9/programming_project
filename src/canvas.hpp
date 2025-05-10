@@ -1,11 +1,7 @@
 #pragma once
 
 #include <bobcat_ui/canvas.h>
-#include <functional>
-
-#include <bobcat_ui/image.h>
 #include "draw_data.hpp"
-#include <bobcat_ui/button.h>
 
 class Canvas : public bobcat::Canvas_ {
 public:
